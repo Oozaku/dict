@@ -11,15 +11,10 @@ import (
 
 	. "github.com/logrusorgru/aurora"
 
-	"github.com/Oozaku/dict/dictapi"
+	"github.com/Oozaku/dict/word"
 )
 
-var reader bufio.Reader
-
-// Create reader that will take input from stdin
-func init() {
-	reader = *bufio.NewReader(os.Stdin)
-}
+var reader bufio.Reader = *bufio.NewReader(os.Stdin)
 
 // Clear terminal screen
 func clearTerminal() {
@@ -58,38 +53,56 @@ func GetEntryFromUser() []string {
 	return filterNonEmpty(listWords)
 }
 
+// Print all meanings grouped by part of speech
+func printMeanings(word word.Word) {
+
+	// Counter used to list each definition
+	counter := 1
+
+	// For each meaning: print its function in the language
+	for partOfSpeech, meanings := range word.Meanings {
+		fmt.Println(Italic(partOfSpeech))
+
+		// For each definition: list it with a increasing number and the definition
+		for _, meaning := range meanings {
+			list := fmt.Sprintf("%d.", counter)
+			fmt.Printf("\t%s %s\n", Bold(list), meaning.Definition)
+			counter++
+		}
+
+		// Separate each semantic group by a new line
+		fmt.Println()
+	}
+}
+
+// Print all non empty phonetics
+func printPhonetics(phonetics []word.Phonetic) {
+	for _, phonetic := range phonetics {
+		if len(phonetic.Text) != 0 {
+			fmt.Printf("%s\n", Bold(phonetic.Text).Italic())
+		}
+	}
+}
+
 // Print result
-func PrintResults(entries []dictapi.Entry) {
+func PrintResults(words []word.Word) {
 
 	// Clear terminal first
 	clearTerminal()
 
-	// Each definition are listed with a increasing number
-	counter := 1
-
 	// For each result from search: print its 'name' and its phonetic
-	for _, entry := range entries {
-		fmt.Printf("%s\n", Bold(strings.ToUpper(entry.Word)))
-		fmt.Printf("%s\n", Bold(entry.Phonetic).Italic())
+	for _, word := range words {
+		fmt.Printf("%s\n", Bold(strings.ToUpper(word.Name)))
 
-		// For each meaning: print its function in the language
-		for _, meaning := range entry.Meanings {
-			fmt.Println(Italic(meaning.PartOfSpeech))
+		// Print all phonetics
+		printPhonetics(word.Phonetics)
 
-			// For each definition: list it with a increasing number and the definition
-			for _, definition := range meaning.Definitions {
-        list := fmt.Sprintf("%d.", counter)
-				fmt.Printf("\t%s %s\n", Bold(list), definition.Def)
-				counter++
-			}
-
-      // Separate each semantic group by a new line
-      fmt.Println()
-		}
+		// Print all meanings grouped by part of speech
+		printMeanings(word)
 	}
 }
 
 // Print welcome message
 func PrintWelcome() {
-	fmt.Println(Bold("Welcome to Dictionary API!!!"))
+	fmt.Println(Bold("Welcome to Dict"))
 }
