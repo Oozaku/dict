@@ -31,7 +31,8 @@ func Get(url string) ([]byte, error) {
 
 	// Status code is an error: return error
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return []byte{}, errors.NoResults{ErrorMessage: string(body), ErrorCode: 404}
+		return []byte{}, &errors.ReqError{Message: string(body),
+	                                    Code: resp.StatusCode}
 	}
 
 	return body, nil

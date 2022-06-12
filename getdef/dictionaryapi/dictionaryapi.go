@@ -19,7 +19,7 @@ func SearchDefinition(words []string) ([]word.Word, error) {
 		return nil, err
 	}
 	var entries []Entry
-	err = json.Unmarshal(raw, &entries)
+  err = json.Unmarshal(raw, &entries)
 	if err != nil {
 		log.Fatal(err)
 	}
