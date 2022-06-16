@@ -10,8 +10,8 @@ making it easy to import inside a ANKI deck.
 
 - Features
   - [x] Integrate an API
+  - [x] Save textual results in a supported format to Anki
   - [ ] Download audios
-  - [ ] Save textual results in a supported format to Anki
   - [ ] Save audio results inside file to be imported in Anki
   - [ ] Create interface to abstract each API client
   - [ ] Define configuration file
