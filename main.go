@@ -6,6 +6,7 @@ import (
 	"log"
 	"strings"
 
+	"github.com/Oozaku/dict/anki"
 	errs "github.com/Oozaku/dict/errors"
 	"github.com/Oozaku/dict/getdef"
 	"github.com/Oozaku/dict/ui"
@@ -29,10 +30,16 @@ func main() {
 		meanings, err := getdef.GetProvider["dictionaryapi"](words)
 		treatErrors(err, words)
 
-    // There was no error: print results
-    if err == nil {
-      ui.PrintResults(meanings)
-    }
+		// There was no error: print results
+		if err == nil {
+			ui.PrintResults(meanings)
+			for _, meaning := range meanings {
+				err = anki.SaveWord("/home/oozaku/Documents/anki/anki.csv", meaning)
+        if err != nil {
+          log.Fatalln(err)
+        }
+			}
+		}
 	}
 }
 
