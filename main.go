@@ -12,6 +12,9 @@ import (
 	"github.com/Oozaku/dict/ui"
 )
 
+// CONSTANTS
+const ANKI_FILE_PATH string = "/home/oozaku/Documents/anki/anki.csv"
+
 // Set log to print date and location where error occurred
 func init() {
 	log.SetFlags(log.Ldate | log.Lshortfile)
@@ -34,10 +37,10 @@ func main() {
 		if err == nil {
 			ui.PrintResults(meanings)
 			for _, meaning := range meanings {
-				err = anki.SaveWord("/home/oozaku/Documents/anki/anki.csv", meaning)
-        if err != nil {
-          log.Fatalln(err)
-        }
+				err = anki.SaveWord(ANKI_FILE_PATH, meaning)
+				if err != nil {
+					log.Fatalln(err)
+				}
 			}
 		}
 	}
