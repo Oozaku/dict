@@ -9,22 +9,52 @@ package anki
 
 import (
 	"fmt"
+	"log"
 	"os"
+	"path/filepath"
 	"strings"
 
+	"github.com/Oozaku/dict/media"
 	"github.com/Oozaku/dict/word"
 )
 
 // createFront creates the front of an Anki card with the word's name and the
-// phonetics in Html format. The format is something like:
+// phonetics in audio file if possible or else in written format. The front's
+// template is like bellow:
 // NAME
 // Phonetic1
 // Phonetic2
-func createFront(title string, phonetics []word.Phonetic) string {
+func createFront(title string, phonetics []word.Phonetic, folder string) string {
 	header := fmt.Sprintf("%s", strings.ToUpper(title))
 
 	// Add each new non-empty phonetic in a new line
 	for _, phonetic := range phonetics {
+
+		// Add audio if possible
+		if phonetic.Url != "" {
+
+			// Get filename and save audio
+			_, filename := filepath.Split(phonetic.Url)
+      extension := filepath.Ext(filename)[1:]
+			path := filepath.Join(folder, filename)
+			err := media.DownloadAudio(phonetic.Url, path)
+
+			// Successfully saved audio: add audio's link and go to next phonetic
+			if err == nil {
+				// header += fmt.Sprintf("<br/>[sound:%s]", filename)
+				header += fmt.Sprintf(
+					"<br/><audio controls><source src=\"%s\" type=\"audio/%s\"></audio>",
+					filename,
+					extension,
+				)
+				continue
+			}
+
+			// There was an erro: log fail and try adding phonetic's text
+			log.Println(err)
+		}
+
+		// Adding audio was not possible: try adding text
 		if phonetic.Text != "" {
 			header += "<br/>" + phonetic.Text
 		}
@@ -35,7 +65,7 @@ func createFront(title string, phonetics []word.Phonetic) string {
 
 // SaveWord takes the file's path and save the word inside this file, it may
 // return an error if the function fails to write the file
-func SaveWord(path string, word word.Word) error {
+func SaveWord(path string, word word.Word, mediaFolder string) error {
 
 	// Open file
 	file, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
@@ -46,7 +76,7 @@ func SaveWord(path string, word word.Word) error {
 
 	// Create front of card, it is composed of word's name and its phonetics then
 	// make it csv compliant
-	front := toCsvCompliant(createFront(word.Name, word.Phonetics))
+	front := toCsvCompliant(createFront(word.Name, word.Phonetics, mediaFolder))
 
 	// Create card's back, composed of list of definitions and then make it csv
 	// compliant

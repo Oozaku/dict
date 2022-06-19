@@ -14,6 +14,7 @@ import (
 
 // CONSTANTS
 const ANKI_FILE_PATH string = "/home/oozaku/Documents/anki/anki.csv"
+const ANKI_MEDIA_FOLDER string = "/home/oozaku/.local/share/Anki2/User 1/collection.media"
 
 // Set log to print date and location where error occurred
 func init() {
@@ -37,7 +38,7 @@ func main() {
 		if err == nil {
 			ui.PrintResults(meanings)
 			for _, meaning := range meanings {
-				err = anki.SaveWord(ANKI_FILE_PATH, meaning)
+				err = anki.SaveWord(ANKI_FILE_PATH, meaning, ANKI_MEDIA_FOLDER)
 				if err != nil {
 					log.Fatalln(err)
 				}

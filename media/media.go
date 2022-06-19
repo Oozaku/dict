@@ -14,21 +14,22 @@ import (
 // following permissions:
 // - read and write to user and his group
 // - read only to others
-func DownloadAudio(url, path string) {
+func DownloadAudio(url, path string) error {
 
 	// Downloads audio's binary
 	audio, err := requests.Get(url)
-	failInError(err)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
 
 	// Saves the file with read with correct permissions
-	err = ioutil.WriteFile(path, audio, 664)
-	failInError(err)
-}
-
-// failInError does nothing if there is no error, but it fails the program if
-// there was an error
-func failInError(err error) {
+	err = ioutil.WriteFile(path, audio, 0664)
 	if err != nil {
-		log.Fatalln(err)
+		log.Println(err)
+		return err
 	}
+
+	// No errors occurred
+	return nil
 }

@@ -9,11 +9,11 @@ import (
 	"github.com/Oozaku/dict/word"
 )
 
-// Endpoint to API
-const url string = "https://api.dictionaryapi.dev/api/v2/entries/en/"
+// CONSTANTS
+const ENDPOINT string = "https://api.dictionaryapi.dev/api/v2/entries/en/"
 
 func SearchDefinition(words []string) ([]word.Word, error) {
-	url := url + strings.Join(words, "+")
+	url := ENDPOINT + strings.Join(words, "+")
 	raw, err := requests.Get(url)
 	if err != nil {
 		return nil, err
