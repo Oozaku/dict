@@ -7,14 +7,11 @@ import (
 	"strings"
 
 	"github.com/Oozaku/dict/anki"
+	"github.com/Oozaku/dict/config"
 	errs "github.com/Oozaku/dict/errors"
 	"github.com/Oozaku/dict/getdef"
 	"github.com/Oozaku/dict/ui"
 )
-
-// CONSTANTS
-const ANKI_FILE_PATH string = "/home/oozaku/Documents/anki/anki.csv"
-const ANKI_MEDIA_FOLDER string = "/home/oozaku/.local/share/Anki2/User 1/collection.media"
 
 // Set log to print date and location where error occurred
 func init() {
@@ -22,6 +19,12 @@ func init() {
 }
 
 func main() {
+
+	// Get configuration file or fail program
+	config, err := config.GetConfiguration()
+	if err != nil {
+		log.Fatalln(err)
+	}
 
 	// Print welcome message
 	ui.PrintWelcome()
@@ -38,7 +41,11 @@ func main() {
 		if err == nil {
 			ui.PrintResults(meanings)
 			for _, meaning := range meanings {
-				err = anki.SaveWord(ANKI_FILE_PATH, meaning, ANKI_MEDIA_FOLDER)
+				err = anki.SaveWord(
+					config.AnkiCsvLocation,
+					meaning,
+					config.AnkiMediaFolder,
+				)
 				if err != nil {
 					log.Fatalln(err)
 				}
