@@ -11,8 +11,8 @@ making it easy to import inside a ANKI deck.
 - Features
   - [x] Integrate an API
   - [x] Save textual results in a supported format to Anki
-  - [ ] Download audios
-  - [ ] Save audio results inside file to be imported in Anki
+  - [x] Download audios
+  - [x] Save audio results inside file to be imported in Anki
   - [ ] Create interface to abstract each API client
   - [ ] Define configuration file
   - [ ] Improve cli/tui
