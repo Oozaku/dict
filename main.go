@@ -37,6 +37,9 @@ func main() {
 		meanings, err := getdef.GetProvider["dictionaryapi"](words)
 		treatErrors(err, words)
 
+    // Join words with same name
+    meanings = getdef.JoinWords(meanings)
+
 		// There was no error: print results
 		if err == nil {
 			ui.PrintResults(meanings)
