@@ -13,49 +13,54 @@ import (
 const ENDPOINT string = "https://api.dictionaryapi.dev/api/v2/entries/en/"
 
 func SearchDefinition(words []string) ([]word.Word, error) {
+
+	// Make request
 	url := ENDPOINT + strings.Join(words, "+")
 	raw, err := requests.Get(url)
 	if err != nil {
 		return nil, err
 	}
+
+	// Unmarshal response into DictionaryApi struct
 	var entries []Entry
-  err = json.Unmarshal(raw, &entries)
+	err = json.Unmarshal(raw, &entries)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	// Process result and deliver list of Words as result
 	var result []word.Word
 	for _, entry := range entries {
+
+		// Create a new word
 		word := createWord(entry.Word)
+
+		// Extract all valid phonetics
 		for _, phonetic := range entry.Phonetics {
 			word.Phonetics = append(
 				word.Phonetics,
 				createPhonetic(phonetic.Phonetics, phonetic.Url),
 			)
 		}
+
+		// Extract meanings
 		for _, meaning := range entry.Meanings {
 			partOfSpeech := meaning.PartOfSpeech
 			createListOfMeanings(meaning.Definitions, &word, partOfSpeech)
 		}
+
+		// Append new word
 		result = append(result, word)
 	}
+
+	// Return result and nil to indicate that there was no errors
 	return result, nil
 }
 
 func createListOfMeanings(reference []Definition, target *word.Word, partOfSpeech string) {
 	for _, definition := range reference {
-    newDef := word.Meaning {Definition: definition.Definition, Example: definition.UseExample}
-    if val, ok := target.Meanings[partOfSpeech]; ok {
-		  target.Meanings[partOfSpeech] = append(val, newDef)
-    } else {
-      target.Meanings[partOfSpeech] = []word.Meaning{newDef}
-    }
-	}
-}
-
-func createMeaning(definition, example string) word.Meaning {
-	return word.Meaning{
-		Definition: definition,
-		Example:    example,
+		newDef := word.Meaning{Definition: definition.Definition, PartOfSpeech: partOfSpeech}
+		target.Meanings = append(target.Meanings, newDef)
 	}
 }
 
@@ -69,6 +74,5 @@ func createPhonetic(text, url string) word.Phonetic {
 func createWord(name string) word.Word {
 	return word.Word{
 		Name: name,
-    Meanings: make(map[string][]word.Meaning),
 	}
 }

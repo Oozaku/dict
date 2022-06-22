@@ -35,7 +35,7 @@ func createFront(title string, phonetics []word.Phonetic, folder string) string 
 
 			// Get filename and save audio
 			_, filename := filepath.Split(phonetic.Url)
-      extension := filepath.Ext(filename)[1:]
+			extension := filepath.Ext(filename)[1:]
 			path := filepath.Join(folder, filename)
 			err := media.DownloadAudio(phonetic.Url, path)
 
@@ -80,7 +80,7 @@ func SaveWord(path string, word word.Word, mediaFolder string) error {
 
 	// Create card's back, composed of list of definitions and then make it csv
 	// compliant
-	back := toCsvCompliant(toHtmlList(word.Meanings))
+	back := toCsvCompliant(toList(word.Meanings))
 
 	// Add new line in csv, each field separated by comma
 	_, err = fmt.Fprintf(file, "%s, %s\n", front, back)
@@ -98,15 +98,15 @@ func toCsvCompliant(field string) string {
 	return fmt.Sprintf("\"%s\"", strings.ReplaceAll(field, "\"", "\"\""))
 }
 
-// toHtmlList transforms a map of meanings grouped by the part of speech into a
-// Html ordered list. The format that this function follows is:
-// <number>. (part of speech) meaning
-func toHtmlList(meanings map[string][]word.Meaning) string {
-	list := "<ol>"
-	for partOfSpeech, definitions := range meanings {
-		for _, definition := range definitions {
-			list += fmt.Sprintf("<li>(%s) %s</li>", partOfSpeech, definition.Definition)
-		}
+// toList creates a list of meanings that will appear in the back of Anki's card
+func toList(meanings []word.Meaning) string {
+	list := ""
+	for _, meaning := range meanings {
+		list += fmt.Sprintf(
+			"- (%s) %s<br/>",
+			meaning.PartOfSpeech,
+			meaning.Definition,
+		)
 	}
-	return list + "</ol>"
+  return list
 }

@@ -56,23 +56,10 @@ func GetEntryFromUser() []string {
 // Print all meanings grouped by part of speech
 func printMeanings(word word.Word) {
 
-	// Counter used to list each definition
-	counter := 1
-
-	// For each meaning: print its function in the language
-	for partOfSpeech, meanings := range word.Meanings {
-		fmt.Println(Italic(partOfSpeech))
-
-		// For each definition: list it with a increasing number and the definition
-		for _, meaning := range meanings {
-			list := fmt.Sprintf("%d.", counter)
-			fmt.Printf("\t%s %s\n", Bold(list), meaning.Definition)
-			counter++
-		}
-
-		// Separate each semantic group by a new line
-		fmt.Println()
-	}
+	// For each meaning: print its part of speech and its definition
+  for _, meaning := range word.Meanings {
+    fmt.Printf("(%s) %s\n", meaning.PartOfSpeech, meaning.Definition)
+  }
 }
 
 // Print all non empty phonetics

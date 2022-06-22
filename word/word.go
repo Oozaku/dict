@@ -15,6 +15,6 @@ type Word struct {
 	Name string
 	// Phonetics of the word
 	Phonetics []Phonetic
-	// Meanings holds the definitions of the word grouped by their part of speech
-	Meanings map[string][]Meaning
+	// Meanings are a list of meaning
+	Meanings []Meaning
 }

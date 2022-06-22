@@ -1,9 +1,9 @@
 package word
 
-// Meaning holds one definition and an use example of a word
+// Meaning holds the definition of a word and its part on speech
 type Meaning struct {
 	// Definition of the word
 	Definition string
-	// Example of use
-	Example string
+	// Part of speech of the word
+	PartOfSpeech string
 }
