@@ -23,12 +23,12 @@ func JoinWords(words []word.Word) []word.Word {
 		}
 	}
 
-  // Convert map into list
+	// Convert map into list
 	var result []word.Word
 	for _, word := range mapping {
 		result = append(result, word)
 	}
 
-  // Return list
+	// Return list
 	return result
 }

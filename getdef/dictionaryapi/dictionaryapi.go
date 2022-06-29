@@ -16,7 +16,8 @@ func SearchDefinition(words []string) ([]word.Word, error) {
 
 	// Make request
 	url := ENDPOINT + strings.Join(words, "+")
-	raw, err := requests.Get(url)
+	headers := make(map[string]string)
+	raw, err := requests.Get(url, headers)
 	if err != nil {
 		return nil, err
 	}

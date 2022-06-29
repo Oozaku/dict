@@ -17,7 +17,8 @@ import (
 func DownloadAudio(url, path string) error {
 
 	// Downloads audio's binary
-	audio, err := requests.Get(url)
+	headers := make(map[string]string)
+	audio, err := requests.Get(url, headers)
 	if err != nil {
 		log.Println(err)
 		return err
