@@ -1,14 +1,10 @@
 package main
 
 import (
-	"errors"
-	"fmt"
 	"log"
-	"strings"
 
 	"github.com/Oozaku/dict/anki"
 	"github.com/Oozaku/dict/config"
-	errs "github.com/Oozaku/dict/errors"
 	"github.com/Oozaku/dict/getdef"
 	"github.com/Oozaku/dict/ui"
 )
@@ -29,19 +25,35 @@ func main() {
 	// Print welcome message
 	ui.PrintWelcome()
 
+	// Retrieve map of clients
+	clients := getdef.RetrieveMapOfClients(config)
+
 	for {
 		// Get input from user and get list of words
 		words := ui.GetEntryFromUser()
 
-		// Get meanings from the chosen provider
-		meanings, err := getdef.GetProvider["dictionaryapi"](words)
-		treatErrors(err, words)
+		// Call each client until get meaning without errors
+		for _, client := range config.Dictionaries {
 
-    // Join words with same name
-    meanings = getdef.JoinWords(meanings)
+			// Get api client
+			api, ok := clients[client]
+			if !ok {
+        log.Printf("There is no client called '%s'\n", client)
+				continue
+			}
 
-		// There was no error: print results
-		if err == nil {
+			// Search for meanings
+			meanings, err := api.SearchDefinition(words)
+			if err != nil {
+				log.Println("Could not retrieve results from", client)
+				log.Println(err)
+				continue
+			}
+
+			// Join words with same name
+			meanings = getdef.JoinWords(meanings)
+
+			// Print meanings and save to anki
 			ui.PrintResults(meanings)
 			for _, meaning := range meanings {
 				err = anki.SaveWord(
@@ -55,32 +67,4 @@ func main() {
 			}
 		}
 	}
-}
-
-// treatErrors check if there is an error and if it is not possible to recover,
-// it will kill the program
-func treatErrors(err error, words []string) {
-	// No errors: return
-	if err == nil {
-		return
-	}
-
-	// Unknown error: kill program
-	var requestError *errs.ReqError
-	if !errors.As(err, &requestError) {
-		log.Fatalln("Unexpected error:", err)
-	}
-
-	// No results found: print not found and return
-	var reqError *errs.ReqError = err.(*errs.ReqError)
-	if reqError.Code == 404 {
-		fmt.Printf("Meaning of '%s' not found\n", strings.Join(words, " "))
-		return
-	}
-
-	// Other error in request: log and kill
-	fmt.Printf("Error while searching\n")
-	fmt.Printf("Code: %d", reqError.Code)
-	fmt.Printf("Body: %s", reqError.Message)
-	log.Fatalln(err)
 }

@@ -12,7 +12,10 @@ import (
 // CONSTANTS
 const ENDPOINT string = "https://api.dictionaryapi.dev/api/v2/entries/en/"
 
-func SearchDefinition(words []string) ([]word.Word, error) {
+// Struct DictionaryApi holds no value
+type DictionaryApi struct {}
+
+func (dict DictionaryApi) SearchDefinition(words []string) ([]word.Word, error) {
 
 	// Make request
 	url := ENDPOINT + strings.Join(words, "+")
