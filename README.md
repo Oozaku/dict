@@ -6,6 +6,10 @@ This project is a dictionary/language learner tool that will let you search
 for meaning/translation of words and it will save the results inside a file,
 making it easy to import inside a ANKI deck.
 
+Special thanks to [Free Dictionary API](https://dictionaryapi.dev/) and 
+[OwlbotAPI](https://owlbot.info/) for providing free APIs and then making this
+project possible.
+
 ## Dependencies
 
 - [go](https://go.dev/doc/install)
@@ -29,7 +33,11 @@ To use this program, you need to set the configuration file at
 ~~~json
 {
   "anki-media-folder": "/home/oozaku/.local/share/Anki2/User 1/collection.media",
-  "anki-csv-location": "/home/oozaku/Documents/anki/anki.csv"
+  "anki-csv-location": "/home/oozaku/Documents/anki/anki.csv",
+  "dictionaries": ["owlbot", "dictionaryapi"],
+  "owlbot": {
+    "token": "<your token here>"
+  }
 }
 ~~~
 
@@ -40,6 +48,12 @@ to Anki.
 The Anki's media folder is a little trick to find, you have to find where
 `collection.media` is located. On Linux, it probably is at
 `~/.local/share/Anki2/<your_profile>/collection.media`.
+
+`dictionaries` specifies which dictionaries you want to use and the sequence
+given defines which dictionaries to look up first until find a result.
+
+`token` inside `owlbot` holds the API token to Owlbot API and you can get
+[here](https://owlbot.info/).
 
 ## Usage
 
@@ -63,13 +77,13 @@ inside a new deck to avoid overwritting you existing cards.
   - [x] Download audios
   - [x] Save audio results inside file to be imported in Anki
   - [x] Define configuration file
-  - [ ] Create interface to abstract each API client
+  - [x] Create interface to abstract each API client
+  - [x] Lookup in each API until find answer
   - [ ] Improve cli/tui
   - [ ] Lookup firstly at memory, if not found, search in API
-  - [ ] Lookup in each API until find answer
 - Documentation:
   - Improve README.md:
-    - [ ] Add instructions on how to build/install
+    - [x] Add instructions on how to build/install
     - [ ] Add documentation about how it works
   - Code:
     - [ ] Add comments
